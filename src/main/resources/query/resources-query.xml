@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
+	default-lazy-init="true">
+
+	<bean id="resources-query" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<!-- if SQL, end with _sql -->
+				<!-- if HQL, end with _hql -->
+				<entry key="findResourcesAndPermissions_sql">
+					<value>
+					<![CDATA[
+						SELECT
+							GROUP_CONCAT(p.permission_name) permissions,
+							res.URI uri,
+							res.TYPE systemType
+						FROM
+							security_permission p,
+							security_permission_resources_ref pr,
+							security_resources res
+						WHERE
+							p.system_type = ?
+						AND	p.id = pr.permission_id
+						AND pr.resources_id = res.ID
+					    AND p.system_type = res.type
+						GROUP BY
+							res.ID					
+					]]>
+					</value>
+				</entry>
+
+				<entry key="findResourcesByRoleName_sql">
+					<value>
+						<![CDATA[
+						SELECT
+							res.URI uri,
+							res.TYPE systemType
+						FROM
+							security_role r,
+							security_role_permission_ref rp,
+							security_permission_resources_ref pr,
+							security_resources res
+						WHERE
+							r.role_name = ?
+						AND r.id = rp.role_id
+						AND rp.permission_id = pr.permission_id
+						AND pr.resources_id = res.id
+					]]>
+					</value>
+				</entry>
+			</map>
+		</constructor-arg>
+	</bean>
+</beans>
