@@ -38,11 +38,12 @@ public class MySecurityMetadataSource implements FilterInvocationSecurityMetadat
     private String systemType;
 
     // return the roleList of requestionURLs
+    @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
         Collection<ConfigAttribute> atts = Lists.newArrayList();
         HttpServletRequest request = ((FilterInvocation) object).getRequest();
         // if uri matchs  need login uri
-        for (ResourcesPermissionsDto dburi : securityResourcesService.findLoginResources(SystemType.valueOf(systemType))) {
+        for (ResourcesPermissionsDto dburi : securityResourcesService.findLoginResources(systemType)) {
             RequestMatcher pathMatcher = new AntPathRequestMatcher(dburi.getUri());
             if (pathMatcher.matches(request)) {
                 for (String permissionName : dburi.getPermissions()) {
@@ -54,11 +55,13 @@ public class MySecurityMetadataSource implements FilterInvocationSecurityMetadat
         return atts;
     }
 
+    @Override
     public boolean supports(Class<?> clazz) {
         // TODO Auto-generated method stub
         return true;
     }
 
+    @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
         return new ArrayList<ConfigAttribute>();
     }

@@ -1,13 +1,13 @@
 package cn.wuxia.project.security.core.entity;
 
-import javax.persistence.*;
-
-import cn.wuxia.project.security.core.enums.SystemType;
 import cn.wuxia.project.common.model.ModifyInfoEntity;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Where;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "security_permission")
@@ -21,13 +21,13 @@ public class SecurityPermission extends ModifyInfoEntity {
 
     private String permissionDesc;
 
-    private SystemType systemType;
+    private String systemType;
 
     public SecurityPermission() {
         super();
     }
 
-    public SecurityPermission(String permissionName, String permissionDesc, SystemType systemType) {
+    public SecurityPermission(String permissionName, String permissionDesc, String systemType) {
         super();
         this.permissionName = permissionName;
         this.permissionDesc = permissionDesc;
@@ -53,13 +53,12 @@ public class SecurityPermission extends ModifyInfoEntity {
     }
 
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "system_type")
-    public SystemType getSystemType() {
+    public String getSystemType() {
         return systemType;
     }
 
-    public void setSystemType(SystemType systemType) {
+    public void setSystemType(String systemType) {
         this.systemType = systemType;
     }
 }

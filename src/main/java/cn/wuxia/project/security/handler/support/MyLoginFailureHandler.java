@@ -4,22 +4,19 @@
  */
 package cn.wuxia.project.security.handler.support;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import cn.wuxia.common.util.JsonUtil;
+import cn.wuxia.project.common.support.Constants;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
-import com.google.common.collect.Maps;
-
-import cn.wuxia.project.common.support.Constants;
-import cn.wuxia.common.util.JsonUtil;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Map;
 
 /**
  * 验证失败处理，增加ajax错误处理。
@@ -28,6 +25,12 @@ import cn.wuxia.common.util.JsonUtil;
  * @version
  */
 public class MyLoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+    public MyLoginFailureHandler() {
+    }
+
+    public MyLoginFailureHandler(String defaultFailureUrl) {
+        super(defaultFailureUrl);
+    }
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)

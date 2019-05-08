@@ -8,34 +8,27 @@
  */
 package cn.wuxia.project.security.core.enums;
 
-import cn.wuxia.common.util.StringUtil;
+import cn.wuxia.common.util.ListUtil;
+import cn.wuxia.project.basic.core.conf.support.DicBean;
+import cn.wuxia.project.basic.support.Functions;
+import cn.wuxia.project.common.bean.SimpleFieldProperty;
+import com.google.common.collect.Lists;
 
-public enum SystemType {
-    SYS_WEBSERVICE("ws", "接口系统"), SYS_BASE("admin", "超管系统"), SYS_API("api", "接口");
+import java.util.List;
 
-    String subdomain;
+public class SystemType {
+    private final static String SYSTEM_TYPE = "SYSTEM_TYPE";
 
-    String displayName;
-
-    SystemType(String subdomain, String displayName) {
-        this.subdomain = subdomain;
-        this.displayName = displayName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public String getSubdomain() {
-        return subdomain;
-    }
-
-    public static SystemType getBy(String subdomain) {
-        for (SystemType type : SystemType.values()) {
-            if (StringUtil.equalsIgnoreCase(subdomain, type.getSubdomain())) {
-                return type;
-            }
+    public static List<SimpleFieldProperty> values() {
+        List<DicBean> dicBeans = Functions.getDicsByParentCode(SYSTEM_TYPE);
+        List<SimpleFieldProperty> systemTypes = Lists.newArrayList();
+        if (ListUtil.isNotEmpty(dicBeans)) {
+            /**
+             * 字典code对应value
+             * 字典value对应name
+             */
+            dicBeans.forEach(dicBean -> systemTypes.add(new SimpleFieldProperty(dicBean.getValue(), dicBean.getCode())));
         }
-        return null;
+        return systemTypes;
     }
 }

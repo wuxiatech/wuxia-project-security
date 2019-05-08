@@ -1,16 +1,12 @@
 package cn.wuxia.project.security.core.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-
-import cn.wuxia.project.security.core.enums.SystemType;
+import cn.wuxia.project.common.model.ModifyInfoEntity;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Where;
 
-import cn.wuxia.project.common.model.ModifyInfoEntity;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "security_resources")
@@ -24,7 +20,7 @@ public class SecurityResources extends ModifyInfoEntity {
 
     private String description;
 
-    private SystemType type;
+    private String type;
 
     public SecurityResources() {
         super();
@@ -46,12 +42,11 @@ public class SecurityResources extends ModifyInfoEntity {
         this.description = description;
     }
 
-    @Enumerated(EnumType.STRING)
-    public SystemType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(SystemType type) {
+    public void setType(String type) {
         this.type = type;
     }
 

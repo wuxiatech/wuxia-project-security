@@ -1,20 +1,23 @@
 /*
-* Created on :08 Nov, 2014
-* Author     :huangzhihua
-* Change History
-* Version       Date         Author           Reason
-* <Ver.No>     <date>        <who modify>       <reason>
-* Copyright 2014-2020 www.ibmall.cn All right reserved.
-*/
+ * Created on :08 Nov, 2014
+ * Author     :huangzhihua
+ * Change History
+ * Version       Date         Author           Reason
+ * <Ver.No>     <date>        <who modify>       <reason>
+ * Copyright 2014-2020 www.ibmall.cn All right reserved.
+ */
 package cn.wuxia.project.security.core.bean;
+
+import cn.wuxia.project.security.core.entity.SecurityResources;
+import com.google.common.collect.Lists;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
 
-import cn.wuxia.project.security.core.entity.SecurityResources;
-import cn.wuxia.project.security.core.enums.SystemType;
-import com.google.common.collect.Lists;
-
+@Getter
+@Setter
 public class PermissionResourcesDto implements Serializable {
 
     /**
@@ -28,48 +31,9 @@ public class PermissionResourcesDto implements Serializable {
 
     private String permissionDesc;
 
-    private SystemType systemType;
+    private String systemType;
 
     private List<SecurityResources> resources = Lists.newArrayList();
 
-    public String getPermissionId() {
-        return permissionId;
-    }
-
-    public void setPermissionId(String permissionId) {
-        this.permissionId = permissionId;
-    }
-
-    public String getPermissionName() {
-        return permissionName;
-    }
-
-    public void setPermissionName(String permissionName) {
-        this.permissionName = permissionName;
-    }
-
-    public String getPermissionDesc() {
-        return permissionDesc;
-    }
-
-    public void setPermissionDesc(String permissionDesc) {
-        this.permissionDesc = permissionDesc;
-    }
-
-    public SystemType getSystemType() {
-        return systemType;
-    }
-
-    public void setSystemType(SystemType systemType) {
-        this.systemType = systemType;
-    }
-
-    public List<SecurityResources> getResources() {
-        return resources;
-    }
-
-    public void setResources(List<SecurityResources> resources) {
-        this.resources = resources;
-    }
 
 }

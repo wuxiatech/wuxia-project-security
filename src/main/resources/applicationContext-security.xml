@@ -5,7 +5,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-	http://www.springframework.org/schema/security  http://www.springframework.org/schema/security/spring-security.xsd">
+	http://www.springframework.org/schema/security  http://www.springframework.org/schema/security/spring-security.xsd" default-lazy-init="true">
 
     <!--unSecurity resource config -->
     <s:http pattern="/commons/**" security="none"/>
@@ -122,7 +122,7 @@
 
 
     <bean id="loginFailureHandler" class="cn.wuxia.project.security.handler.support.MyLoginFailureHandler">
-        <property name="defaultFailureUrl" value="${loginFailureUrl}"/>
+        <constructor-arg name="defaultFailureUrl" value="${loginFailureUrl:/auth/login}"/>
     </bean>
 
     <bean id="loginSuccessHandler"
@@ -134,7 +134,7 @@
     <!-- logout filter configuration Start -->
     <bean id="logoutSuccessHandler"
           class="cn.wuxia.project.security.handler.support.MyLogoutSuccessHandler">
-        <property name="logoutSuccessUrl" value="${logoutSuccessUrl}"/>
+        <property name="logoutSuccessUrl" value="${logoutSuccessUrl:/auth/login}"/>
         <property name="logoutUrl" value="${cas.logoutUrl}"/>
     </bean>
     <!-- logout filter configuration End -->

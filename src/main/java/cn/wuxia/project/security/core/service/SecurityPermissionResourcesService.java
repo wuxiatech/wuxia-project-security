@@ -4,15 +4,14 @@
  */
 package cn.wuxia.project.security.core.service;
 
-import java.util.List;
-
+import cn.wuxia.project.common.service.CommonService;
 import cn.wuxia.project.security.core.bean.PermissionResourcesDto;
 import cn.wuxia.project.security.core.bean.ResourcesPermissionsDto;
 import cn.wuxia.project.security.core.entity.SecurityPermission;
 import cn.wuxia.project.security.core.entity.SecurityPermissionResourcesRef;
 import cn.wuxia.project.security.core.entity.SecurityResources;
-import cn.wuxia.project.security.core.enums.SystemType;
-import cn.wuxia.project.common.service.CommonService;
+
+import java.util.List;
 
 public interface SecurityPermissionResourcesService extends CommonService<SecurityPermissionResourcesRef, String> {
 
@@ -24,7 +23,7 @@ public interface SecurityPermissionResourcesService extends CommonService<Securi
      * @return
      * @author songlin
      */
-    public List<ResourcesPermissionsDto> findLoginResources(SystemType systemType);
+    public List<ResourcesPermissionsDto> findLoginResources(String systemType);
 
     /**
      * 清空findLoginResources的缓存
@@ -33,7 +32,7 @@ public interface SecurityPermissionResourcesService extends CommonService<Securi
      * @return
      * @author songlin
      */
-    public void cleanLoginResourcesCache(SystemType systemType);
+    public void cleanLoginResourcesCache(String systemType);
 
     /**
      * 资源权限
@@ -84,7 +83,7 @@ public interface SecurityPermissionResourcesService extends CommonService<Securi
      * @return
      * @author songlin
      */
-    public List<SecurityResources> findResourcesByType(SystemType systemType);
+    public List<SecurityResources> findResourcesByType(String systemType);
 
 
     /**
@@ -119,7 +118,7 @@ public interface SecurityPermissionResourcesService extends CommonService<Securi
      * @return
      * @author songlin
      */
-    public List<SecurityPermission> findPermissionsByType(SystemType systemType);
+    public List<SecurityPermission> findPermissionsByType(String systemType);
 
     /**
      * 删除权限

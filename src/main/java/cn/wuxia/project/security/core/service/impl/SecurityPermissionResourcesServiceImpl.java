@@ -6,6 +6,9 @@ package cn.wuxia.project.security.core.service.impl;
 
 import cn.wuxia.common.orm.query.Sort;
 import cn.wuxia.common.util.StringUtil;
+import cn.wuxia.project.common.dao.CommonDao;
+import cn.wuxia.project.common.service.impl.CommonServiceImpl;
+import cn.wuxia.project.common.support.CacheConstants;
 import cn.wuxia.project.security.core.bean.PermissionResourcesDto;
 import cn.wuxia.project.security.core.bean.ResourcesPermissionsDto;
 import cn.wuxia.project.security.core.dao.SecurityPermissionDao;
@@ -15,11 +18,7 @@ import cn.wuxia.project.security.core.dao.SecurityRolePermissionDao;
 import cn.wuxia.project.security.core.entity.SecurityPermission;
 import cn.wuxia.project.security.core.entity.SecurityPermissionResourcesRef;
 import cn.wuxia.project.security.core.entity.SecurityResources;
-import cn.wuxia.project.security.core.enums.SystemType;
 import cn.wuxia.project.security.core.service.SecurityPermissionResourcesService;
-import cn.wuxia.project.common.dao.CommonDao;
-import cn.wuxia.project.common.service.impl.CommonServiceImpl;
-import cn.wuxia.project.common.support.CacheConstants;
 import com.google.common.collect.Sets;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,15 +51,15 @@ public class SecurityPermissionResourcesServiceImpl extends CommonServiceImpl<Se
         return securityPermissionResoucesDao;
     }
 
-    @Cacheable(key = CacheConstants.CACHED_KEY_DEFAULT + "+#systemType.name()", value = CacheConstants.CACHED_VALUE_4_HOUR)
+    @Cacheable(key = CacheConstants.CACHED_KEY_DEFAULT + "+#systemType", value = CacheConstants.CACHED_VALUE_4_HOUR)
     @Override
-    public List<ResourcesPermissionsDto> findLoginResources(SystemType systemType) {
+    public List<ResourcesPermissionsDto> findLoginResources(String systemType) {
         return securityPermissionResoucesDao.findLoginResourcesByType(systemType);
     }
 
     @Override
-    @CacheEvict(key = "#root.targetClass +'.findLoginResources'+#systemType.name()", value = CacheConstants.CACHED_VALUE_4_HOUR)
-    public void cleanLoginResourcesCache(SystemType systemType) {
+    @CacheEvict(key = "#root.targetClass +'.findLoginResources'+#systemType", value = CacheConstants.CACHED_VALUE_4_HOUR)
+    public void cleanLoginResourcesCache(String systemType) {
 
     }
 
@@ -91,7 +90,7 @@ public class SecurityPermissionResourcesServiceImpl extends CommonServiceImpl<Se
     }
 
     @Override
-    public List<SecurityResources> findResourcesByType(SystemType systemType) {
+    public List<SecurityResources> findResourcesByType(String systemType) {
         if (systemType == null) {
             return securityResoucesDao.findAll(new Sort("uri"));
         }
@@ -102,9 +101,9 @@ public class SecurityPermissionResourcesServiceImpl extends CommonServiceImpl<Se
     @Override
     public PermissionResourcesDto getPermissionResource(String permissionId) {
         PermissionResourcesDto dto = new PermissionResourcesDto();
-        if (StringUtil.isBlank(permissionId))
+        if (StringUtil.isBlank(permissionId)) {
             return dto;
-
+        }
         List<SecurityResources> resources = securityPermissionResoucesDao.findByPermissionId(permissionId);
         SecurityPermission sr = securityPermissionDao.get(permissionId);
         dto.setResources(resources);
@@ -148,7 +147,7 @@ public class SecurityPermissionResourcesServiceImpl extends CommonServiceImpl<Se
     }
 
     @Override
-    public List<SecurityPermission> findPermissionsByType(SystemType systemType) {
+    public List<SecurityPermission> findPermissionsByType(String systemType) {
         if (systemType == null) {
             return securityPermissionDao.findAll(new Sort("permissionName"));
         } else {

@@ -4,17 +4,15 @@
  */
 package cn.wuxia.project.security.core.dao;
 
-import java.util.List;
-import java.util.Map;
-
-import cn.wuxia.project.security.core.bean.ResourcesPermissionsDto;
-import cn.wuxia.project.security.core.entity.SecurityResources;
-import cn.wuxia.project.security.core.enums.SystemType;
+import cn.wuxia.common.spring.SpringContextHolder;
 import cn.wuxia.project.basic.core.common.BaseCommonDao;
+import cn.wuxia.project.security.core.bean.ResourcesPermissionsDto;
 import cn.wuxia.project.security.core.entity.SecurityPermissionResourcesRef;
+import cn.wuxia.project.security.core.entity.SecurityResources;
 import org.springframework.stereotype.Component;
 
-import cn.wuxia.common.spring.SpringContextHolder;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class SecurityPermissionResourcesDao extends BaseCommonDao<SecurityPermissionResourcesRef, String> {
@@ -26,9 +24,9 @@ public class SecurityPermissionResourcesDao extends BaseCommonDao<SecurityPermis
      * @return
      * @author songlin
      */
-    public List<ResourcesPermissionsDto> findLoginResourcesByType(SystemType type) {
+    public List<ResourcesPermissionsDto> findLoginResourcesByType(String type) {
         String sql = queryMap.get("findResourcesAndPermissions_sql");
-        return  query(sql, ResourcesPermissionsDto.class, type.name());
+        return  query(sql, ResourcesPermissionsDto.class, type);
     }
 
     public List<SecurityResources> findByPermissionId(String permissionId) {
