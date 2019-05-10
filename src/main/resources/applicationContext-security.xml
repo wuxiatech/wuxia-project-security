@@ -5,7 +5,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-	http://www.springframework.org/schema/security  http://www.springframework.org/schema/security/spring-security.xsd" default-lazy-init="true">
+	http://www.springframework.org/schema/security  http://www.springframework.org/schema/security/spring-security.xsd"
+       default-lazy-init="true">
 
     <!--unSecurity resource config -->
     <s:http pattern="/commons/**" security="none"/>
@@ -25,6 +26,10 @@
     <s:http entry-point-ref="casProcessingFilterEntryPoint"
             auto-config="false" servlet-api-provision="true"
             disable-url-rewriting="true">
+        <s:headers>
+            <!-- 支持同域名iframe请求 -->
+            <s:frame-options policy="SAMEORIGIN"/>
+        </s:headers>
         <s:custom-filter position="CAS_FILTER" ref="casAuthenticationFilter"/>
         <s:custom-filter before="FILTER_SECURITY_INTERCEPTOR"
                          ref="securityFilter"/>
