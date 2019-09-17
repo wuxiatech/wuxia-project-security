@@ -1,16 +1,18 @@
 package cn.wuxia.project.security.core.entity;
 
+import cn.wuxia.project.common.model.ModifyInfoEntity;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Where;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Where;
-
-import cn.wuxia.project.common.model.ModifyInfoEntity;
-
 @Entity
 @Table(name = "security_user")
 @Where(clause = ModifyInfoEntity.ISOBSOLETE_DATE_IS_NULL)
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class SecurityUser extends ModifyInfoEntity {
 
     private static final long serialVersionUID = 1227390629186486032L;

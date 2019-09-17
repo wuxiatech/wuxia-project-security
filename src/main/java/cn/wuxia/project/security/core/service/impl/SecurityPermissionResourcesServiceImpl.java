@@ -51,14 +51,14 @@ public class SecurityPermissionResourcesServiceImpl extends CommonServiceImpl<Se
         return securityPermissionResoucesDao;
     }
 
-    @Cacheable(key = CacheConstants.CACHED_KEY_DEFAULT + "+#systemType", value = CacheConstants.CACHED_VALUE_4_HOUR)
+    @Cacheable(key = CacheConstants.CACHED_KEY_DEFAULT + "+#systemType", value = CacheConstants.CACHED_VALUE_1_HOUR)
     @Override
     public List<ResourcesPermissionsDto> findLoginResources(String systemType) {
         return securityPermissionResoucesDao.findLoginResourcesByType(systemType);
     }
 
     @Override
-    @CacheEvict(key = "#root.targetClass +'.findLoginResources'+#systemType", value = CacheConstants.CACHED_VALUE_4_HOUR)
+    @CacheEvict(key = "#root.targetClass +'.findLoginResources'+#systemType", value = CacheConstants.CACHED_VALUE_1_HOUR)
     public void cleanLoginResourcesCache(String systemType) {
 
     }

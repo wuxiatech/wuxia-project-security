@@ -1,7 +1,10 @@
 package cn.wuxia.project.security.handler.support;
 
-import java.util.Collection;
-
+import cn.wuxia.common.spring.support.MessageSourceHandler;
+import cn.wuxia.common.util.ListUtil;
+import cn.wuxia.common.util.StringUtil;
+import cn.wuxia.project.security.common.MyUserDetails;
+import cn.wuxia.project.security.core.enums.LoginResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -14,12 +17,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
-import cn.wuxia.common.spring.support.MessageSourceHandler;
-import cn.wuxia.common.util.ListUtil;
-import cn.wuxia.common.util.StringUtil;
-import cn.wuxia.project.security.core.enums.LoginResourceType;
-import cn.wuxia.project.security.common.MyUserDetails;
+import java.util.Collection;
 
+/**
+ * @author songlin
+ */
 public class MyAccessDecisionManager implements AccessDecisionManager {
     private static final Logger logger = LoggerFactory.getLogger(MyAccessDecisionManager.class);
 

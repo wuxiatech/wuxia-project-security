@@ -5,12 +5,12 @@
     <parent>
         <groupId>cn.wuxia.project</groupId>
         <artifactId>wuxia.project-parent</artifactId>
-        <version>2.1.0</version>
+        <version>2.2.0</version>
     </parent>
     <groupId>cn.wuxia.project</groupId>
     <artifactId>wuxia.project-security</artifactId>
     <name>Project Security</name>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <properties>
     </properties>
     <description>Security Core Project</description>

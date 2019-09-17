@@ -1,7 +1,5 @@
 package cn.wuxia.project.security.handler.support;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.jasig.cas.client.util.URIBuilder;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.TicketValidationException;
@@ -23,6 +21,8 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class MyCasAuthenticationProvider extends CasAuthenticationProvider {
     private static final Logger logger = LoggerFactory.getLogger(MyCasAuthenticationProvider.class);
 
@@ -32,6 +32,7 @@ public class MyCasAuthenticationProvider extends CasAuthenticationProvider {
 
     private ServiceProperties serviceProperties;
 
+    @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         if (!this.supports(authentication.getClass())) {
             return null;
