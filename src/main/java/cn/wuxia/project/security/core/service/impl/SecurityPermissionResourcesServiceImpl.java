@@ -4,6 +4,8 @@
  */
 package cn.wuxia.project.security.core.service.impl;
 
+import cn.wuxia.common.exception.AppDaoException;
+import cn.wuxia.common.exception.AppServiceException;
 import cn.wuxia.common.orm.query.Sort;
 import cn.wuxia.common.util.StringUtil;
 import cn.wuxia.project.common.dao.CommonDao;
@@ -138,7 +140,12 @@ public class SecurityPermissionResourcesServiceImpl extends CommonServiceImpl<Se
                 refs.add(new SecurityPermissionResourcesRef(dto.getPermissionId(), resources.getId()));
             }
         }
-        super.batchSave(refs);
+        try {
+            super.batchSave(refs);
+        } catch (
+                AppDaoException e) {
+            throw new AppServiceException("保存失败");
+        }
     }
 
     @Override

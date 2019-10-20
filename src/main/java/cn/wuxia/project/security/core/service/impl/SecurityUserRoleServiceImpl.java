@@ -4,26 +4,25 @@
  */
 package cn.wuxia.project.security.core.service.impl;
 
-import java.util.List;
-import java.util.Set;
-
+import cn.wuxia.common.exception.AppDaoException;
+import cn.wuxia.common.exception.AppServiceException;
+import cn.wuxia.common.orm.query.Sort;
+import cn.wuxia.common.util.StringUtil;
+import cn.wuxia.project.common.dao.CommonDao;
+import cn.wuxia.project.common.service.impl.CommonServiceImpl;
+import cn.wuxia.project.security.core.bean.UserRoleDto;
+import cn.wuxia.project.security.core.dao.SecurityRoleDao;
+import cn.wuxia.project.security.core.dao.SecurityUserRoleDao;
 import cn.wuxia.project.security.core.entity.SecurityRole;
 import cn.wuxia.project.security.core.entity.SecurityUserRoleRef;
+import cn.wuxia.project.security.core.service.SecurityUserRoleService;
+import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Sets;
-
-import cn.wuxia.common.exception.AppServiceException;
-import cn.wuxia.common.orm.query.Sort;
-import cn.wuxia.common.util.StringUtil;
-import cn.wuxia.project.security.core.bean.UserRoleDto;
-import cn.wuxia.project.security.core.dao.SecurityRoleDao;
-import cn.wuxia.project.security.core.dao.SecurityUserRoleDao;
-import cn.wuxia.project.security.core.service.SecurityUserRoleService;
-import cn.wuxia.project.common.dao.CommonDao;
-import cn.wuxia.project.common.service.impl.CommonServiceImpl;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -65,7 +64,12 @@ public class SecurityUserRoleServiceImpl extends CommonServiceImpl<SecurityUserR
                 sets.add(new SecurityUserRoleRef(dto.getUserId(), sr.getId()));
             }
         }
-        batchSave(sets);
+        try {
+            batchSave(sets);
+        } catch (
+                AppDaoException e) {
+            throw new AppServiceException("保存失败");
+        }
     }
 
 }

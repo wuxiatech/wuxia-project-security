@@ -4,14 +4,16 @@
  */
 package cn.wuxia.project.security.common;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
+import cn.wuxia.common.util.ServletUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import cn.wuxia.common.util.ServletUtils;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
+/**
+ * @author songlin
+ */
 public class MySecurityHttpServeltRequestWrapper extends HttpServletRequestWrapper {
     public MySecurityHttpServeltRequestWrapper(HttpServletRequest servletRequest) {
         super(servletRequest);

@@ -1,12 +1,8 @@
 package cn.wuxia.project.security.handler.support;
 
-import java.io.IOException;
-import java.util.Date;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import cn.wuxia.common.spring.SpringContextHolder;
+import cn.wuxia.common.util.StringUtil;
+import cn.wuxia.project.security.common.MySecurityHttpServeltRequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,10 +14,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 
-import cn.wuxia.project.security.common.MySecurityHttpServeltRequestWrapper;
-import cn.wuxia.common.spring.SpringContextHolder;
-import cn.wuxia.common.util.StringUtil;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Date;
 
+/**
+ * @author songlin
+ */
 public class MySecurityFilter extends AbstractSecurityInterceptor implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(MySecurityFilter.class);
 
@@ -42,6 +43,7 @@ public class MySecurityFilter extends AbstractSecurityInterceptor implements Fil
      * SecurityMetadataSource.getAttributes(object); 2.Have authority
      * this.accessDecisionManager.decide(authenticated, object, attributes);
      **/
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         long startTime = System.currentTimeMillis();
         HttpServletRequest srequest = new MySecurityHttpServeltRequestWrapper((HttpServletRequest) request);
@@ -53,9 +55,9 @@ public class MySecurityFilter extends AbstractSecurityInterceptor implements Fil
          */
         HttpSession session = srequest.getSession();
         SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
-        if (context != null)
+        if (context != null) {
             SecurityContextHolder.setContext(context);
-
+        }
         logger.debug("$$$[" + ip + "] Begin handler request. URI:" + uri);
 
         FilterInvocation fi = new FilterInvocation(srequest, response, chain);
@@ -119,10 +121,12 @@ public class MySecurityFilter extends AbstractSecurityInterceptor implements Fil
         this.securityMetadataSource = securityMetadataSource;
     }
 
+    @Override
     public void init(FilterConfig arg0) throws ServletException {
         // TODO Auto-generated method stub
     }
 
+    @Override
     public void destroy() {
         // TODO Auto-generated method stub
 

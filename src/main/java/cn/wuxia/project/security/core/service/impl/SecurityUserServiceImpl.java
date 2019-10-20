@@ -4,13 +4,14 @@
  */
 package cn.wuxia.project.security.core.service.impl;
 
+import cn.wuxia.common.exception.AppDaoException;
 import cn.wuxia.common.exception.AppServiceException;
+import cn.wuxia.project.common.dao.CommonDao;
+import cn.wuxia.project.common.service.impl.CommonServiceImpl;
+import cn.wuxia.project.security.common.MyPasswordEncoder;
 import cn.wuxia.project.security.core.dao.SecurityUserDao;
 import cn.wuxia.project.security.core.entity.SecurityUser;
 import cn.wuxia.project.security.core.service.SecurityUserService;
-import cn.wuxia.project.common.dao.CommonDao;
-import cn.wuxia.project.security.common.MyPasswordEncoder;
-import cn.wuxia.project.common.service.impl.CommonServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,11 @@ public class SecurityUserServiceImpl extends CommonServiceImpl<SecurityUser, Str
         String md5password = encoder.encodeMD5Password(password);
         cu.setPassword(MyPasswordEncoder.extractPassword(md5password));
         cu.setSalt(MyPasswordEncoder.extractSalt(md5password));
-        save(cu);
+        try {
+            save(cu);
+        } catch (AppDaoException e) {
+            throw new AppServiceException("保存失败");
+        }
     }
 
     /**
@@ -57,7 +62,11 @@ public class SecurityUserServiceImpl extends CommonServiceImpl<SecurityUser, Str
         String md5password = encoder.encodeMD5Password(password);
         cu.setPassword(MyPasswordEncoder.extractPassword(md5password));
         cu.setSalt(MyPasswordEncoder.extractSalt(md5password));
-        save(cu);
+        try {
+            save(cu);
+        } catch (AppDaoException e) {
+            throw new AppServiceException("保存失败");
+        }
     }
 
     @Override

@@ -3,6 +3,8 @@ package cn.wuxia.project.security.common;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Sets;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -19,6 +21,8 @@ import java.util.Set;
 @JsonAutoDetect
 @JsonIgnoreProperties(value = {"uid", "password", "authorities", "salt", "accountNonExpired", "accountNonLocked", "credentialsNonExpired",
         "enabled"})
+@Getter
+@Setter
 public class MyUserDetails extends org.springframework.security.core.userdetails.User implements Serializable {
     /**
      * Comment for <code>serialVersionUID</code>
@@ -46,18 +50,11 @@ public class MyUserDetails extends org.springframework.security.core.userdetails
         this.roles = Collections.unmodifiableSet(Sets.newConcurrentHashSet(roles));
     }
 
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
     /***
      * Get detailed information of the currently logged on user must rewrite the
      * times method
      **/
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof MyUserDetails) {
             MyUserDetails ud = (MyUserDetails) obj;
@@ -73,35 +70,7 @@ public class MyUserDetails extends org.springframework.security.core.userdetails
         return ToStringBuilder.reflectionToString(this);
     }
 
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public String getClientIp() {
-        return clientIp;
-    }
-
-    public void setClientIp(String clientIp) {
-        this.clientIp = clientIp;
-    }
-
-    public Set<String> getRoles() {
-        return roles;
-    }
-
     public void setRoles(Set<String> roles) {
-        this.roles =  Collections.unmodifiableSet(roles);
+        this.roles = Collections.unmodifiableSet(roles);
     }
 }

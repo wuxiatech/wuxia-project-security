@@ -74,7 +74,7 @@
         <property name="key" value="an_id_for_this_auth_provider_only"/>
     </bean>
     <bean id="ticketValidator"
-          class="org.jasig.cas.client.validation.Cas20ProxyTicketValidator">
+          class="org.jasig.cas.client.validation.Cas30ProxyTicketValidator">
         <constructor-arg index="0" value="${cas.serverUrl}"/>
         <!-- <property name="proxyCallbackUrl" value="${cas.proxyCallbackUrl}"
             /> -->

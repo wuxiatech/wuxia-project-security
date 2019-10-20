@@ -4,6 +4,8 @@
  */
 package cn.wuxia.project.security.core.service.impl;
 
+import cn.wuxia.common.exception.AppDaoException;
+import cn.wuxia.common.exception.AppServiceException;
 import cn.wuxia.project.security.core.bean.ResourcesDto;
 import cn.wuxia.project.security.core.bean.RolePermissionsDto;
 import cn.wuxia.project.security.core.dao.SecurityRoleDao;
@@ -51,9 +53,9 @@ public class SecurityRolePermissionServiceImpl extends CommonServiceImpl<Securit
     @Override
     public RolePermissionsDto getRolePermission(String roleId) {
         RolePermissionsDto dto = new RolePermissionsDto();
-        if (StringUtil.isBlank(roleId))
+        if (StringUtil.isBlank(roleId)) {
             return dto;
-
+        }
         List<SecurityPermission> permissions = securityRolePermissionDao.findByRoleId(roleId);
         SecurityRole sr = securityRoleDao.get(roleId);
         dto.setPermissions(permissions);
@@ -68,7 +70,7 @@ public class SecurityRolePermissionServiceImpl extends CommonServiceImpl<Securit
     public void saveRolePermissions(RolePermissionsDto dto) {
         if (StringUtil.isNotBlank(dto.getRoleId())) {
             securityRolePermissionDao.deleteByRoleId(dto.getRoleId());
-            SecurityRole srole = securityRoleDao.getEntityById(dto.getRoleId());
+            SecurityRole srole = securityRoleDao.findByIdIncludeLogicalDelete(dto.getRoleId());
             if (!StringUtil.equals(srole.getRoleName(), dto.getRoleName()) || !StringUtil.equals(srole.getRoleDesc(), dto.getRoleDesc())) {
                 srole.setRoleName(dto.getRoleName());
                 srole.setRoleDesc(dto.getRoleDesc());
@@ -85,7 +87,11 @@ public class SecurityRolePermissionServiceImpl extends CommonServiceImpl<Securit
                 refs.add(new SecurityRolePermissionRef(dto.getRoleId(), permission.getId()));
             }
         }
-        super.batchSave(refs);
+        try {
+            super.batchSave(refs);
+        } catch (AppDaoException e) {
+           throw new AppServiceException("保存失败");
+        }
     }
 
     @Override

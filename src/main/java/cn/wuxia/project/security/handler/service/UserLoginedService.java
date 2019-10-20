@@ -32,6 +32,18 @@ public interface UserLoginedService {
     public UserLoginedData loginByCasUserid(String casUserid);
 
     /**
+     * 登录之前操作
+     * @author songlin
+     */
+    public UserLoginedData loginByWxUnionid(String appid, String unionid);
+
+    /**
+     * 登录之前操作
+     * @author songlin
+     */
+    public UserLoginedData loginByWxOpenid(String appid, String openid);
+
+    /**
      * 登录之后的操作
      * @author songlin
      */

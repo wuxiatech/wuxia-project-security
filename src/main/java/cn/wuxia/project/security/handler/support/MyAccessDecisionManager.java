@@ -72,7 +72,7 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
         String errorMessage = "你没有权限访问";
         if (getMessageSourceHandler() != null)
             errorMessage = getMessageSourceHandler().getString("error.noAccessPermission", LocaleContextHolder.getLocale());
-        String warnlog = "---------------------{} 访问当前路径需要权限 {" + configAttributes + "}";
+        String warnlog = "{} 访问当前路径需要权限 {" + configAttributes + "}";
         if ("anonymousUser".equals(detail)) {
             warnlog += ", 但当前用户尚未登录";
         } else if (detail instanceof User) {
