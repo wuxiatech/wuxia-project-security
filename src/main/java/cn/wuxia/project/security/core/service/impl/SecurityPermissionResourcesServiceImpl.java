@@ -91,6 +91,7 @@ public class SecurityPermissionResourcesServiceImpl extends CommonServiceImpl<Se
         return securityResoucesDao.findAll(new Sort("type", "uri"));
     }
 
+    @Cacheable(value = CacheConstants.CACHED_VALUE_1_HOUR, key = CacheConstants.CACHED_KEY_DEFAULT+"+#systemType")
     @Override
     public List<SecurityResources> findResourcesByType(String systemType) {
         if (systemType == null) {
