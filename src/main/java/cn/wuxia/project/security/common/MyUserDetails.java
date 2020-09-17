@@ -37,6 +37,7 @@ public class MyUserDetails extends org.springframework.security.core.userdetails
 
     private String clientIp; //用户访问的IP
 
+
     private Set<String> roles;
 
     public MyUserDetails(String loginName, String userPassword, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired,

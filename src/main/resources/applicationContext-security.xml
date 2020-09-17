@@ -1,179 +1,173 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:s="http://www.springframework.org/schema/security"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans.xsd
-	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-	http://www.springframework.org/schema/security  http://www.springframework.org/schema/security/spring-security.xsd"
-       default-lazy-init="true">
+	xmlns:s="http://www.springframework.org/schema/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd   
+	http://www.springframework.org/schema/security   
+	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
-    <!--unSecurity resource config -->
-    <s:http pattern="/commons/**" security="none"/>
-    <s:http pattern="/**/favicon.ico" security="none"/>
-    <s:http pattern="/auth/**" security="none"/>
-    <s:http pattern="/api/**" security="none"/>
-    <s:http pattern="/resources/**" security="none"/>
-    <!--if 'auto-config = true' then must use 'from-login'.if do use this attribute,then
-        it's default value is 'http-basic'(no have session). access-denied-page:throw
-        error ,rediretor to the page -->
+	<!--unSecurity resource config -->
+	<s:http pattern="/commons/**" security="none"/>
+	<s:http pattern="/**/favicon.ico" security="none"/>
+	<s:http pattern="/auth/**" security="none"/>
+	<s:http pattern="/api/**" security="none"/>
+	<s:http pattern="/resources/**" security="none"/>
+	<!-- <s:http pattern="/" security="none" /> -->
+	<!-- if 'auto-config = true' then must use 'from-login'.if do use this attribute,then 
+		it's default value is 'http-basic'(no have session). access-denied-page:throw 
+		error ,rediretor to the page -->
+	<s:http entry-point-ref="loginUrlEntryPoint" disable-url-rewriting="true">
+		<!-- <s:http-basic /> -->
+		<s:headers>
+			<!-- 支持同域名iframe请求 -->
+			<s:frame-options policy="SAMEORIGIN"/>
+		</s:headers>
+		<!-- <s:custom-filter before="CONCURRENT_SESSION_FILTER" ref="memcachedSessionFilter" /> -->
+		<s:custom-filter position="FORM_LOGIN_FILTER" ref="loginFilter" />
+		<s:access-denied-handler error-page="/common/403.jsp" />
+		<s:custom-filter position="LOGOUT_FILTER" ref="logoutFilter" />
+		<s:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="securityFilter" />
+		<s:custom-filter position="REMEMBER_ME_FILTER" ref="rememberMeFilter" />
+		<!-- <s:intercept-url pattern="/" access="ROLE_ANONYMOUS" /> -->
+		<s:session-management session-fixation-protection="none" >
+			<s:concurrency-control max-sessions="10" error-if-maximum-exceeded="false" />
+		</s:session-management>
+		<s:session-management
+				session-authentication-strategy-ref="currentControllerStrategy"/>
+	</s:http>
 
-    <bean id="myWebInvocationPrivilegeEvaluator"
-          class="org.springframework.security.web.access.DefaultWebInvocationPrivilegeEvaluator">
-        <constructor-arg name="securityInterceptor" ref="securityFilter"/>
-    </bean>
+	<!-- Authentication Start -->
+	<s:authentication-manager alias="authenticationManager" erase-credentials="false">
+		<s:authentication-provider ref="authenticationProvider">
+			<!-- <s:password-encoder ref="MyPasswordEncoder"> <s:salt-source user-property="username"/> 
+				</s:password-encoder> -->
+		</s:authentication-provider>
+		<s:authentication-provider ref="rememberMeAuthenticationProvider">
+		</s:authentication-provider>
+	</s:authentication-manager>
 
-    <s:http entry-point-ref="casProcessingFilterEntryPoint"
-            auto-config="false" servlet-api-provision="true"
-            disable-url-rewriting="true">
-        <s:headers>
-            <!-- 支持同域名iframe请求 -->
-            <s:frame-options policy="SAMEORIGIN"/>
-        </s:headers>
-        <s:custom-filter position="CAS_FILTER" ref="casAuthenticationFilter"/>
-        <s:custom-filter before="FILTER_SECURITY_INTERCEPTOR"
-                         ref="securityFilter"/>
-        <s:csrf disabled="true"/>
-        <s:http-basic/>
-        <s:logout logout-url="/logout" success-handler-ref="logoutSuccessHandler"
-                  invalidate-session="true" delete-cookies="jsessionid"/>
+	<bean id="authenticationProvider"
+		class="cn.wuxia.project.security.handler.support.MyAuthenticationProvider">
+		<property name="userDetailsService" ref="userDetailsService"></property>
+	</bean>
+	<bean id="userDetailsService"
+		class="cn.wuxia.project.security.handler.support.MyUserDetailsService" />
+	<bean id="myPasswordEncoder" class="cn.wuxia.project.security.common.MyPasswordEncoder"></bean>
+	<!-- Authentication End -->
 
-        <s:session-management
-                session-fixation-protection="none">
-            <s:concurrency-control max-sessions="10"
-                                   error-if-maximum-exceeded="false"/>
-        </s:session-management>
-        <s:session-management
-                session-authentication-strategy-ref="currentControllerStrategy"/>
-    </s:http>
+	<!-- security access control start -->
+	<bean id="securityFilter" class="cn.wuxia.project.security.handler.support.MySecurityFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="securityMetadataSource">
+			<bean class="cn.wuxia.project.security.handler.support.MySecurityMetadataSource" >
+				<property name="systemType" value="${system.type}"/>
+			</bean>
+		</property>
+		<property name="accessDecisionManager">
+			<bean class="cn.wuxia.project.security.handler.support.MyAccessDecisionManager" >
+				<property name="messageSourceHandler" ref="messageSourceHandler"/>
+			</bean>
+		</property>
+	</bean>
+	<!-- securtiy access control end -->
+	
+	<!-- start before login -->
+	<bean id="loginUrlEntryPoint" class="cn.wuxia.project.security.handler.support.MyLoginUrlEntryPoint">
+		<constructor-arg value="${loginFormUrl}"></constructor-arg>
+	</bean>
+	<!-- end before login -->
+	<!-- login filter configuration Start -->
+	<bean id="loginFilter"
+		class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="rememberMeServices" ref="rememberMeServices" />
+		<!-- <property name="sessionStrategy" ref="currentControllerStrategy"/> -->
+		<property name="authenticationFailureHandler" ref="loginFailureHandler" />
+		<property name="authenticationSuccessHandler" ref="loginSuccessHandler" />
+		<property name="filterProcessesUrl" value="${loginProcessUrl}" />
+	</bean>
 
-    <!-- 开启注解对方法权限验证 -->
-    <s:global-method-security secured-annotations="enabled"/>
-    <!-- cas -->
+	<bean id="loginFailureHandler"
+		class="cn.wuxia.project.security.handler.support.MyLoginFailureHandler">
+		<property name="defaultFailureUrl" value="${loginFailureUrl}" />
+	</bean>
 
-    <bean id="casAuthenticationFilter"
-          class="org.springframework.security.cas.web.CasAuthenticationFilter">
-        <property name="authenticationManager" ref="authenticationManager"/>
-        <!-- 认证失败返回的页面(非403错误) -->
-        <property name="authenticationFailureHandler" ref="loginFailureHandler"></property>
-        <!-- 认证成功返回的页面，此处做了修改，这个类是继续之前的操作。默认的类是设置一个固定的页面 -->
-        <property name="authenticationSuccessHandler" ref="loginSuccessHandler"></property>
-    </bean>
+	<bean id="loginSuccessHandler" class="cn.wuxia.project.security.handler.support.MyLoginSuccessHandler">
+		<property name="defaultTargetUrl" value="${loginSuccessUrl}" />
+		<property name="targetUrlParameter" value="targetUrl" />
+	</bean>
+	<!-- login filter configuration End -->
 
-    <bean id="casProcessingFilterEntryPoint"
-          class="cn.wuxia.project.security.handler.support.MyCasAuthenticationEntryPoint">
-        <property name="loginUrl" value="${cas.loginUrl}"/>  <!-- 单点登录服务器登录URL -->
-        <property name="serviceProperties" ref="serviceProperties"/>
-    </bean>
+	<!-- logout filter configuration Start -->
+	<bean id="logoutFilter"
+		class="org.springframework.security.web.authentication.logout.LogoutFilter">
+		<constructor-arg ref="logoutSuccessHandler" />
+		<constructor-arg>
+			<list>
+				<ref bean="rememberMeServices" />
+				<bean
+					class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
+				</bean>
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="${logouProcessUrl}"></property>
+	</bean>
+	<bean id="logoutSuccessHandler" class="cn.wuxia.project.security.handler.support.MyLogoutSuccessHandler">
+		<property name="logoutSuccessUrl" value="${logoutSuccessUrl}" />
+	</bean>
+	<!-- logout filter configuration End -->
 
-    <bean id="casAuthenticationProvider"
-          class="cn.wuxia.project.security.handler.support.MyCasAuthenticationProvider">
-        <property name="authenticationUserDetailsService" ref="userDetailsService"/>
-        <property name="serviceProperties" ref="serviceProperties"/>
-        <property name="ticketValidator" ref="ticketValidator"/>
-        <property name="key" value="an_id_for_this_auth_provider_only"/>
-    </bean>
-    <bean id="ticketValidator"
-          class="org.jasig.cas.client.validation.Cas30ProxyTicketValidator">
-        <constructor-arg index="0" value="${cas.serverUrl}"/>
-        <!-- <property name="proxyCallbackUrl" value="${cas.proxyCallbackUrl}"
-            /> -->
-        <property name="acceptAnyProxy" value="true"/>
-        <!-- <property name="proxyGrantingTicketStorage" ref="proxyStorage" /> -->
-    </bean>
-    <bean id="serviceProperties" class="org.springframework.security.cas.ServiceProperties">
-        <property name="service" value="${cas.service}"/>
-        <!-- client服务的URL， j_spring_cas_security_check是security自己定义的一个filter -->
-        <property name="sendRenew" value="false"/>
-    </bean>
+	<!-- remember me Configuration Start -->
+	<bean id="rememberMeFilter"
+		class="org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter">
+		<constructor-arg name="authenticationManager" ref="authenticationManager" />
+		<constructor-arg name="rememberMeServices" ref="rememberMeServices" />
+	</bean>
 
-    <!-- cas end -->
+	<bean id="rememberMeServices"
+		class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
+		<constructor-arg name="key" value="paLLwApsifs24THosE62scabWow78PEaCh99Jus" />
+		<constructor-arg name="userDetailsService" ref="userDetailsService" />
+		<property name="cookieName" value="${rememberMeCookieName}" />
+		<property name="alwaysRemember" value="false" />
+		<property name="tokenValiditySeconds" value="604800" />
+		<property name="parameter" value="${rememberMeProcess}" />
+	</bean>
 
-    <!-- Authentication Start 调用CAS -->
-    <s:authentication-manager alias="authenticationManager"
-                              erase-credentials="false">
-        <s:authentication-provider ref="casAuthenticationProvider">
-        </s:authentication-provider>
-    </s:authentication-manager>
+	<bean id="rememberMeAuthenticationProvider"
+		class="org.springframework.security.authentication.RememberMeAuthenticationProvider">
+		<constructor-arg name="key" value="paLLwApsifs24THosE62scabWow78PEaCh99Jus" />
+	</bean>
+	<!-- remember me Configuration End -->
 
-    <bean id="userDetailsService"
-          class="cn.wuxia.project.security.handler.support.MyCasUserDetailsService">
-        <constructor-arg>
-            <array>
-                <value>casAccountId</value>
-            </array>
-        </constructor-arg>
-    </bean>
-    <!-- Authentication End -->
+	<!-- Session Configuration Start -->
+	<bean id="concurrentSessionFilter"
+		class="org.springframework.security.web.session.ConcurrentSessionFilter">
+		<constructor-arg name="sessionRegistry" ref="sessionRegistry" />
+	</bean>
 
-    <!-- handler access control start -->
-    <bean id="securityFilter" class="cn.wuxia.project.security.handler.support.MySecurityFilter">
-        <property name="authenticationManager" ref="authenticationManager"/>
-        <property name="securityMetadataSource">
-            <bean id="mySecurityMetadataSource"
-                  class="cn.wuxia.project.security.handler.support.MySecurityMetadataSource">
-                <property name="systemType" value="${system.type}"/>
-            </bean>
-        </property>
-        <property name="accessDecisionManager">
-            <bean class="cn.wuxia.project.security.handler.support.MyAccessDecisionManager">
-                <property name="messageSourceHandler" ref="messageSourceHandler"/>
-            </bean>
-        </property>
-    </bean>
+	<bean
+			class="org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy">
+		<constructor-arg>
+			<list>
+				<bean
+						class="org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy">
+					<constructor-arg ref="sessionRegistry"/>
+				</bean>
+				<bean
+						class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy"/>
+				<bean
+						class="org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy">
+					<constructor-arg ref="sessionRegistry"/>
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="sessionRegistry"
+		class="org.springframework.security.core.session.SessionRegistryImpl" />
+	<!-- Session Configuration End -->
 
-
-    <!-- securtiy access control end -->
-
-
-    <bean id="loginFailureHandler" class="cn.wuxia.project.security.handler.support.MyLoginFailureHandler">
-        <constructor-arg name="defaultFailureUrl" value="${loginFailureUrl:/auth/login}"/>
-    </bean>
-
-    <bean id="loginSuccessHandler"
-          class="cn.wuxia.project.security.handler.support.MyLoginSuccessHandler">
-        <property name="defaultTargetUrl" value="${loginSuccessUrl}"/>
-    </bean>
-    <!-- login filter configuration End -->
-
-    <!-- logout filter configuration Start -->
-    <bean id="logoutSuccessHandler"
-          class="cn.wuxia.project.security.handler.support.MyLogoutSuccessHandler">
-        <property name="logoutSuccessUrl" value="${logoutSuccessUrl:/auth/login}"/>
-        <property name="logoutUrl" value="${cas.logoutUrl}"/>
-    </bean>
-    <!-- logout filter configuration End -->
-
-
-    <!-- Session Configuration Start -->
-    <bean id="concurrentSessionFilter"
-          class="org.springframework.security.web.session.ConcurrentSessionFilter">
-        <constructor-arg ref="sessionRegistry"/>
-    </bean>
-
-    <bean
-            class="org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy">
-        <constructor-arg>
-            <list>
-                <bean
-                        class="org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy">
-                    <constructor-arg ref="sessionRegistry"/>
-                </bean>
-                <bean
-                        class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy"/>
-                <bean
-                        class="org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy">
-                    <constructor-arg ref="sessionRegistry"/>
-                </bean>
-            </list>
-        </constructor-arg>
-    </bean>
-
-    <bean id="sessionRegistry"
-          class="org.springframework.security.core.session.SessionRegistryImpl"/>
-    <!-- Session Configuration End -->
-
-    <!-- Automatically receives AuthenticationEvent messages -->
-    <bean id="loggerListener"
-          class="org.springframework.security.authentication.event.LoggerListener"/>
+	<!-- Automatically receives AuthenticationEvent messages -->
+	<bean id="loggerListener"
+		class="org.springframework.security.authentication.event.LoggerListener" />
 </beans> 
